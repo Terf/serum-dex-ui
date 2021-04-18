@@ -6,7 +6,7 @@ import {
 import { Button, Col, Menu, Popover, Row, Select } from 'antd';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
-import logo from '../assets/logo.svg';
+// import logo from '../assets/logo.svg';
 import styled from 'styled-components';
 import { useWallet } from '../utils/wallet';
 import { ENDPOINTS, useConnectionConfig } from '../utils/connection';
@@ -18,6 +18,7 @@ import { Connection } from '@solana/web3.js';
 import WalletConnect from './WalletConnect';
 import AppSearch from './AppSearch';
 import { getTradePageUrl } from '../utils/markets';
+import { Modal } from 'antd';
 
 const Wrapper = styled.div`
   background-color: #0d1017;
@@ -30,7 +31,7 @@ const Wrapper = styled.div`
 const LogoWrapper = styled.div`
   display: flex;
   align-items: center;
-  color: #2abdd2;
+  color: #07FFA3;
   font-weight: bold;
   cursor: pointer;
   img {
@@ -47,7 +48,7 @@ const EXTERNAL_LINKS = {
   '/developer-resources': 'https://serum-academy.com/en/developer-resources/',
   '/explorer': 'https://explorer.solana.com',
   '/srm-faq': 'https://projectserum.com/srm-faq',
-  '/swap': 'https://swap.projectserum.com',
+  '/swap': 'https://swap.solana.market',
 };
 
 export default function TopBar() {
@@ -64,6 +65,17 @@ export default function TopBar() {
   const location = useLocation();
   const history = useHistory();
   const [searchFocussed, setSearchFocussed] = useState(false);
+  const [swapModalOpen, setSwapModalOpen] = useState(false);
+
+
+  function handleOpenModal() {
+    setSwapModalOpen(true);
+    return false;
+  }
+
+  function handleCloseModal() {
+    setSwapModalOpen(false);
+  }
 
   const handleClick = useCallback(
     (e) => {
@@ -141,8 +153,8 @@ export default function TopBar() {
       />
       <Wrapper>
         <LogoWrapper onClick={() => history.push(tradePageUrl)}>
-          <img src={logo} alt="" />
-          {'SERUM'}
+          {/* <img src={logo} alt="" /> */}
+          {'solana.market'}
         </LogoWrapper>
         <Menu
           mode="horizontal"
@@ -160,15 +172,26 @@ export default function TopBar() {
             TRADE
           </Menu.Item>
           {!searchFocussed && (
-            <Menu.Item key="/swap" style={{ margin: '0 10px' }}>
-              <a
-                href={EXTERNAL_LINKS['/swap']}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                SWAP
+            <div>
+              <Menu.Item key="/swap" style={{ margin: '0 10px' }}>
+                <a
+                  href={EXTERNAL_LINKS['/swap']}
+                  rel="noopener noreferrer"
+                  onClick={handleOpenModal}
+                >
+                  SWAP
               </a>
-            </Menu.Item>
+              </Menu.Item>
+              <Modal
+                style={{minHeight: '30em'}}
+                visible={swapModalOpen}
+                onCancel={handleCloseModal}
+                footer={null}
+                width={600}
+              >
+                <iframe title="swap-iframe" src="{EXTERNAL_LINKS['/swap']}" style={{width: '100%', border: 'none', minHeight: '25em'}}></iframe>
+              </Modal>
+            </div>
           )}
           {connected && (!searchFocussed || location.pathname === '/balances') && (
             <Menu.Item key="/balances" style={{ margin: '0 10px' }}>
@@ -277,7 +300,7 @@ export default function TopBar() {
           >
             <Col>
               <PlusCircleOutlined
-                style={{ color: '#2abdd2' }}
+                style={{ color: '#07FFA3' }}
                 onClick={() => setAddEndpointVisible(true)}
               />
             </Col>
@@ -288,7 +311,7 @@ export default function TopBar() {
                 title="URL"
                 trigger="hover"
               >
-                <InfoCircleOutlined style={{ color: '#2abdd2' }} />
+                <InfoCircleOutlined style={{ color: '#07FFA3' }} />
               </Popover>
             </Col>
             <Col>
